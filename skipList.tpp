@@ -191,3 +191,10 @@ bool SkipList<keyType, valueType>::insert(const SkipListNode<keyType, valueType>
   size_ += 1;
   return true;
 }
+
+template <typename keyType, typename valueType>
+bool SkipList<keyType, valueType>::remove(const keyType &key)
+{
+  // TODO
+  return true;
+}
