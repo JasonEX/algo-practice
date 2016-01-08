@@ -48,7 +48,7 @@ public:
   bool compact() { return true; };
   bool insert(const SkipListNode<keyType, valueType> &);
   bool remove(const keyType &);
-  SkipListNode<keyType, valueType> * find(const keyType &) { return 0; };
+  bool find(const keyType &, valueType &);
 };
 
 template <typename keyType, typename valueType>

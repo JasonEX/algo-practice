@@ -263,3 +263,28 @@ bool SkipList<keyType, valueType>::remove(const keyType &key)
   }
   return found;
 }
+
+template <typename keyType, typename valueType>
+bool SkipList<keyType, valueType>::find(const keyType &key, valueType &value)
+{
+  SkipListNode<keyType, valueType> *itNode = head_;
+  bool found = false;
+  while (itNode != NULL)
+  {
+    if (itNode->isHead() || itNode->key() < key)
+      if (itNode->next() != NULL && itNode->next()->key() <= key)
+        itNode = itNode->next();
+      else
+        itNode = itNode->underlayer();
+    else if (itNode->key() == key)
+    {
+      // Get value
+      found = true;
+      value = itNode->value();
+      return true;
+    }
+    else
+      return false;
+  }
+  return found;
+}
