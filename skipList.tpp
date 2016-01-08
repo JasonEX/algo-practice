@@ -146,7 +146,7 @@ SkipList<keyType, valueType>::~SkipList()
     }
     delNode = levelHead;
     levelHead = levelHead->underlayer();
-    delete levelHead;
+    delete delNode;
   }
 }
 
@@ -166,6 +166,7 @@ void SkipList<keyType, valueType>::dump()
     while (itNode != NULL)
     {
       std::cout << "[" << itNode->key() << ", " << itNode->value() << "]";
+//      std::cout << "[" << itNode->key() << ", " << itNode->value() << ": " << itNode->height() << "]";
       itNode = itNode->next();
     }
     std::cout << std::endl;
@@ -176,13 +177,21 @@ void SkipList<keyType, valueType>::dump()
 template <typename keyType, typename valueType>
 void SkipList<keyType, valueType>::compact()
 {
+  int headHeight = head_->height();
   SkipListNode<keyType, valueType> *delNode = head_;
   while (delNode->next() == NULL && delNode->underlayer() != NULL)
   {
     head_ = delNode->underlayer();
     head_->upperlayer(NULL);
+    headHeight -= 1;
     delete delNode;
     delNode = head_;
+  }
+  SkipListNode<keyType, valueType> *itNode = head_;
+  while (itNode != NULL)
+  {
+    itNode->height_ = headHeight;
+    itNode = itNode->underlayer();
   }
 }
 
@@ -203,15 +212,25 @@ bool SkipList<keyType, valueType>::insert(const SkipListNode<keyType, valueType>
     head->height_ = 0;
     head_ = head;
   }
+  if (head_->height() < node.height())
+  {
+    // Adjust height of head node except for top level one, that one leaved to under processing code
+    SkipListNode<keyType, valueType> *itNode = head_->underlayer();
+    while (itNode != NULL)
+    {
+      itNode->height_ = node.height();
+      itNode = itNode->underlayer();
+    }
+  }
   while (head_->height() < node.height())
   {
     // Increase height of head node
     SkipListNode<keyType, valueType> *newNode = new SkipListNode<keyType, valueType>();
     newNode->underlayer(head_);
     head_->upperlayer(newNode);
-    head_->height_ += 1;
     newNode->head_ = true;
-    newNode->height_ = head_->height();
+    newNode->height_ = head_->height() + 1;
+    head_->height_ = node.height();
     head_ = newNode;
   }
   SkipListNode<keyType, valueType> *itNode = head_;
