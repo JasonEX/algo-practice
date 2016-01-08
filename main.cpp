@@ -11,5 +11,11 @@ int main()
     list.remove(i);
   list.dump();
 
+  int ret = -1;
+  if (list.find(10, ret))
+    std::cout << ret << std::endl;
+  else
+    std::cout << "Not found!" << std::endl;
+
   return 0;
 }
