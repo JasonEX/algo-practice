@@ -45,7 +45,7 @@ public:
   ~SkipList();
   unsigned long long size() const;
   void dump();
-  bool compact() { return true };
+  bool compact() { return true; };
   bool insert(const SkipListNode<keyType, valueType> &);
   bool remove(const keyType &);
   SkipListNode<keyType, valueType> * find(const keyType &) { return 0; };
