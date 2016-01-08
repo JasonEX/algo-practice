@@ -56,12 +56,14 @@ public:
   bool find(const keyType &, valueType &);
   valueType & find(const keyType &);
 
+  // Since the height would not change, the value will always get from top level
+  // it should be safe to just return the value of top level node
   inline valueType & operator[](const keyType &key) { return find(key); }
   inline const valueType & operator[](const keyType &key) const { return find(key); }
 };
 
 template <typename keyType, typename valueType>
-inline SkipListNode<keyType, valueType> createNode(keyType key, valueType value)
+inline SkipListNode<keyType, valueType> createNode(const keyType &key, const valueType &value)
 {
   return SkipListNode<keyType, valueType>(key, value);
 }
