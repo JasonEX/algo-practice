@@ -55,6 +55,9 @@ public:
   bool remove(const keyType &);
   bool find(const keyType &, valueType &);
   valueType & find(const keyType &);
+
+  inline valueType & operator[](const keyType &key) { return find(key); }
+  inline const valueType & operator[](const keyType &key) const { return find(key); }
 };
 
 template <typename keyType, typename valueType>
