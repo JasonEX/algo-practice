@@ -34,5 +34,18 @@ int main()
   {
     cout << e.what() << endl;
   }
+
+  try
+  {
+    cout << list[40] << endl;
+    list[40] = 40;
+    cout << list[40] << endl;
+    cout << list[61] << endl;
+  }
+  catch (exception &e)
+  {
+    cout << e.what() << endl;
+  }
+
   return 0;
 }
