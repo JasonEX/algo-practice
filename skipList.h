@@ -22,6 +22,7 @@ public:
   SkipListNode(const SkipListNode<keyType, valueType> &);
   keyType key() const;
   valueType value() const;
+  valueType & mutableValue();
   SkipListNode<keyType, valueType> * prev() const;
   void prev(SkipListNode<keyType, valueType> *);
   SkipListNode<keyType, valueType> * next() const;
@@ -53,6 +54,7 @@ public:
   bool insert(const SkipListNode<keyType, valueType> &);
   bool remove(const keyType &);
   bool find(const keyType &, valueType &);
+  valueType & find(const keyType &);
 };
 
 template <typename keyType, typename valueType>

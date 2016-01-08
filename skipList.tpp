@@ -1,5 +1,7 @@
 #include <cstdlib>
 #include <iostream>
+#include <sstream>
+#include <stdexcept>
 // SkipListNode
 
 template <typename keyType, typename valueType>
@@ -55,6 +57,12 @@ keyType SkipListNode<keyType, valueType>::key() const
 
 template <typename keyType, typename valueType>
 valueType SkipListNode<keyType, valueType>::value() const
+{
+  return value_;
+}
+
+template <typename keyType, typename valueType>
+valueType & SkipListNode<keyType, valueType>::mutableValue()
 {
   return value_;
 }
@@ -337,4 +345,25 @@ bool SkipList<keyType, valueType>::find(const keyType &key, valueType &value)
       return false;
   }
   return found;
+}
+
+template <typename keyType, typename valueType>
+valueType & SkipList<keyType, valueType>::find(const keyType &key)
+{
+  SkipListNode<keyType, valueType> *itNode = head_;
+  std::ostringstream os;
+  os << "key not found" << ":[" << key << "]";
+  while (itNode != NULL)
+  {
+    if (itNode->isHead() || itNode->key() < key)
+      if (itNode->next() != NULL && itNode->next()->key() <= key)
+        itNode = itNode->next();
+      else
+        itNode = itNode->underlayer();
+    else if (itNode->key() == key)
+      return itNode->mutableValue();
+    else
+      throw std::out_of_range(os.str());
+  }
+  throw std::out_of_range(os.str());
 }
