@@ -25,5 +25,14 @@ int main()
   else
     std::cout << "21 Not found!" << std::endl;
 
+  try
+  {
+    cout << list.find(30) << endl;
+    cout << list.find(51) << endl;
+  }
+  catch (exception &e)
+  {
+    cout << e.what() << endl;
+  }
   return 0;
 }
