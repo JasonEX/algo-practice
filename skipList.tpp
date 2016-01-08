@@ -11,33 +11,39 @@ void SkipListNode<keyType, valueType>::generateHeight()
 }
 
 template <typename keyType, typename valueType>
-SkipListNode<keyType, valueType>::SkipListNode()
-  : next_(NULL),
-    underlayer_(NULL),
-    head_(false)
+SkipListNode<keyType, valueType>::SkipListNode() : 
+  prev_(NULL),
+  next_(NULL),
+  upperlayer_(NULL), 
+  underlayer_(NULL),
+  head_(false)
 {
   generateHeight();
 }
 
 template <typename keyType, typename valueType>
-SkipListNode<keyType, valueType>::SkipListNode(const keyType &key, const valueType &value)
-  : key_(key),
-    value_(value),
-    next_(NULL),
-    underlayer_(NULL),
-    head_(false)
+SkipListNode<keyType, valueType>::SkipListNode(const keyType &key, const valueType &value) : 
+  key_(key),
+  value_(value),
+  prev_(NULL),
+  next_(NULL),
+  upperlayer_(NULL),
+  underlayer_(NULL),
+  head_(false)
 {
   generateHeight();
 }
 
 template <typename keyType, typename valueType>
-SkipListNode<keyType, valueType>::SkipListNode(const SkipListNode<keyType, valueType> &node)
-  : key_(node.key_),
-    value_(node.value_),
-    next_(node.next_),
-    underlayer_(node.underlayer_),
-    height_(node.height_),
-    head_(node.head_)
+SkipListNode<keyType, valueType>::SkipListNode(const SkipListNode<keyType, valueType> &node) : 
+  key_(node.key_),
+  value_(node.value_),
+  prev_(node.prev_),
+  next_(node.next_),
+  upperlayer_(node.upperlayer_),
+  underlayer_(node.underlayer_),
+  height_(node.height_),
+  head_(node.head_)
 {
 }
 
@@ -54,6 +60,18 @@ valueType SkipListNode<keyType, valueType>::value() const
 }
 
 template <typename keyType, typename valueType>
+SkipListNode<keyType, valueType> * SkipListNode<keyType, valueType>::prev() const
+{
+  return prev_;
+}
+
+template <typename keyType, typename valueType>
+void SkipListNode<keyType, valueType>::prev(SkipListNode<keyType, valueType> *node)
+{
+  prev_ = node;
+}
+
+template <typename keyType, typename valueType>
 SkipListNode<keyType, valueType> * SkipListNode<keyType, valueType>::next() const
 {
   return next_;
@@ -63,6 +81,18 @@ template <typename keyType, typename valueType>
 void SkipListNode<keyType, valueType>::next(SkipListNode<keyType, valueType> *node)
 {
   next_ = node;
+}
+
+template <typename keyType, typename valueType>
+SkipListNode<keyType, valueType> * SkipListNode<keyType, valueType>::upperlayer() const
+{
+  return upperlayer_;
+}
+
+template <typename keyType, typename valueType>
+void SkipListNode<keyType, valueType>::upperlayer(SkipListNode<keyType, valueType> *node)
+{
+  upperlayer_ = node;
 }
 
 template <typename keyType, typename valueType>
@@ -92,9 +122,9 @@ bool SkipListNode<keyType, valueType>::isHead() const
 // SkipList
 
 template <typename keyType, typename valueType>
-SkipList<keyType, valueType>::SkipList()
-  : head_(NULL),
-    size_(0)
+SkipList<keyType, valueType>::SkipList() : 
+  head_(NULL),
+  size_(0)
 {
 }
 
@@ -154,8 +184,10 @@ bool SkipList<keyType, valueType>::insert(const SkipListNode<keyType, valueType>
   }
   while (head_->height() < node.height())
   {
+    // Increase height of head node
     SkipListNode<keyType, valueType> *newNode = new SkipListNode<keyType, valueType>();
     newNode->underlayer(head_);
+    head_->upperlayer(newNode);
     head_->height_ += 1;
     newNode->head_ = true;
     newNode->height_ = head_->height();
@@ -177,9 +209,13 @@ bool SkipList<keyType, valueType>::insert(const SkipListNode<keyType, valueType>
           SkipListNode<keyType, valueType> *nextNode = itNode->next();
           SkipListNode<keyType, valueType> *newNode = new SkipListNode<keyType, valueType>(node);
           itNode->next(newNode);
+          newNode->prev(itNode);
           newNode->next(nextNode);
+          if (nextNode != NULL)
+            nextNode->prev(newNode);
           if (floorNode != NULL)
             floorNode->underlayer(newNode);
+          newNode->upperlayer(floorNode);
           floorNode = newNode;
         }
         currentHeight -= 1;
@@ -195,6 +231,35 @@ bool SkipList<keyType, valueType>::insert(const SkipListNode<keyType, valueType>
 template <typename keyType, typename valueType>
 bool SkipList<keyType, valueType>::remove(const keyType &key)
 {
-  // TODO
-  return true;
+  SkipListNode<keyType, valueType> *itNode = head_;
+  bool found = false;
+  while (itNode != NULL)
+  {
+    if (itNode->isHead() || itNode->key() < key)
+      if (itNode->next() != NULL && itNode->next()->key() <= key)
+        itNode = itNode->next();
+      else
+        itNode = itNode->underlayer();
+    else if (itNode->key() == key)
+    {
+      // Remove on this level
+      found = true;
+      SkipListNode<keyType, valueType> *prevNode = itNode->prev();
+      SkipListNode<keyType, valueType> *nextNode = itNode->next();
+      SkipListNode<keyType, valueType> *upperNode = itNode->upperlayer();
+      SkipListNode<keyType, valueType> *underNode = itNode->underlayer();
+      if (prevNode != NULL)
+        prevNode->next(nextNode);
+      if (nextNode != NULL)
+        nextNode->prev(prevNode);
+      if (upperNode != NULL)
+        upperNode->underlayer(underNode);
+      if (underNode != NULL)
+        underNode->upperlayer(upperNode);
+      itNode = itNode->underlayer();
+    }
+    else
+      return false;
+  }
+  return found;
 }

@@ -9,7 +9,9 @@ class SkipListNode
 private:
   keyType key_;
   valueType value_;
+  SkipListNode *prev_;
   SkipListNode *next_;
+  SkipListNode *upperlayer_;
   SkipListNode *underlayer_;
   int height_;
   bool head_;
@@ -20,8 +22,12 @@ public:
   SkipListNode(const SkipListNode<keyType, valueType> &);
   keyType key() const;
   valueType value() const;
+  SkipListNode<keyType, valueType> * prev() const;
+  void prev(SkipListNode<keyType, valueType> *);
   SkipListNode<keyType, valueType> * next() const;
   void next(SkipListNode<keyType, valueType> *);
+  SkipListNode<keyType, valueType> * upperlayer() const;
+  void upperlayer(SkipListNode<keyType, valueType> *);
   SkipListNode<keyType, valueType> * underlayer() const;
   void underlayer(SkipListNode<keyType, valueType> *);
   int height() const;
@@ -39,6 +45,7 @@ public:
   ~SkipList();
   unsigned long long size() const;
   void dump();
+  bool compact() { return true };
   bool insert(const SkipListNode<keyType, valueType> &);
   bool remove(const keyType &);
   SkipListNode<keyType, valueType> * find(const keyType &) { return 0; };
