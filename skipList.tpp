@@ -142,7 +142,7 @@ void SkipList<keyType, valueType>::dump()
 }
 
 template <typename keyType, typename valueType>
-bool SkipList<keyType, valueType>::insert(const SkipListNode<keyType, valueType> *node)
+bool SkipList<keyType, valueType>::insert(const SkipListNode<keyType, valueType> &node)
 {
   if (size() == 0)
   {
@@ -152,7 +152,7 @@ bool SkipList<keyType, valueType>::insert(const SkipListNode<keyType, valueType>
     head->height_ = 0;
     head_ = head;
   }
-  while (head_->height() < node->height())
+  while (head_->height() < node.height())
   {
     SkipListNode<keyType, valueType> *newNode = new SkipListNode<keyType, valueType>();
     newNode->underlayer(head_);
@@ -166,16 +166,16 @@ bool SkipList<keyType, valueType>::insert(const SkipListNode<keyType, valueType>
   unsigned long long currentHeight = head_->height();
   while (itNode != NULL)
   {
-    if (itNode->isHead() || itNode->key() < node->key())
-      if (itNode->next() != NULL && itNode->next()->key() < node->key())
+    if (itNode->isHead() || itNode->key() < node.key())
+      if (itNode->next() != NULL && itNode->next()->key() < node.key())
         itNode = itNode->next();
       else
       {
-        if (currentHeight <= node->height())
+        if (currentHeight <= node.height())
         {
           // Add to this level
           SkipListNode<keyType, valueType> *nextNode = itNode->next();
-          SkipListNode<keyType, valueType> *newNode = new SkipListNode<keyType, valueType>(*node);
+          SkipListNode<keyType, valueType> *newNode = new SkipListNode<keyType, valueType>(node);
           itNode->next(newNode);
           newNode->next(nextNode);
           if (floorNode != NULL)

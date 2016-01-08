@@ -39,15 +39,15 @@ public:
   ~SkipList();
   unsigned long long size() const;
   void dump();
-  bool insert(const SkipListNode<keyType, valueType> *);
+  bool insert(const SkipListNode<keyType, valueType> &);
   bool remove(const keyType &);
   SkipListNode<keyType, valueType> * find(const keyType &) { return 0; };
 };
 
 template <typename keyType, typename valueType>
-inline SkipListNode<keyType, valueType> *createNode(keyType key, valueType value)
+inline SkipListNode<keyType, valueType> createNode(keyType key, valueType value)
 {
-  return new SkipListNode<keyType, valueType>(key, value);
+  return SkipListNode<keyType, valueType>(key, value);
 }
 
 #include "skipList.tpp"
