@@ -38,14 +38,18 @@ template <typename keyType, typename valueType>
 class SkipList
 {
 private:
+  static const unsigned long long defaultCompactTrigger = 20;
   SkipListNode<keyType, valueType> *head_;
   unsigned long long size_;
+  unsigned long long delCount_;
+  unsigned long long compactTrigger_;
 public:
   SkipList();
   ~SkipList();
   unsigned long long size() const;
   void dump();
-  bool compact() { return true; };
+  void compact();
+  void setCompactTrigger(const unsigned long long &);
   bool insert(const SkipListNode<keyType, valueType> &);
   bool remove(const keyType &);
   bool find(const keyType &, valueType &);

@@ -124,7 +124,9 @@ bool SkipListNode<keyType, valueType>::isHead() const
 template <typename keyType, typename valueType>
 SkipList<keyType, valueType>::SkipList() : 
   head_(NULL),
-  size_(0)
+  size_(0),
+  delCount_(0),
+  compactTrigger_(defaultCompactTrigger)
 {
 }
 
@@ -169,6 +171,25 @@ void SkipList<keyType, valueType>::dump()
     std::cout << std::endl;
     levelHead = levelHead->underlayer();
   }
+}
+
+template <typename keyType, typename valueType>
+void SkipList<keyType, valueType>::compact()
+{
+  SkipListNode<keyType, valueType> *delNode = head_;
+  while (delNode->next() == NULL && delNode->underlayer() != NULL)
+  {
+    head_ = delNode->underlayer();
+    head_->upperlayer(NULL);
+    delete delNode;
+    delNode = head_;
+  }
+}
+
+template <typename keyType, typename valueType>
+void SkipList<keyType, valueType>::setCompactTrigger(const unsigned long long &compactTrigger)
+{
+  compactTrigger_ = compactTrigger;
 }
 
 template <typename keyType, typename valueType>
@@ -260,6 +281,16 @@ bool SkipList<keyType, valueType>::remove(const keyType &key)
     }
     else
       return false;
+  }
+  if (found)
+  {
+    size_ -= 1;
+    delCount_ += 1;
+    if (delCount_ == compactTrigger_)
+    {
+      compact();
+      delCount_ = 0;
+    }
   }
   return found;
 }
